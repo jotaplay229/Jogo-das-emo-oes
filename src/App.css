@@ -332,3 +332,35 @@ svg {
   width: 100%;
   height: 100%;
 }
+
+.copyright {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #444;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 6px 12px;
+  border-radius: 12px;
+  z-index: 1000;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.copyright-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.copyright a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.copyright a:hover {
+  text-decoration: underline;
+}

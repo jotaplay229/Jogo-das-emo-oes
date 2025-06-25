@@ -3,6 +3,11 @@ import './App.css';
 import JogoMemoria from './JogoMemoria';
 import JogoQuebraCabeca from './JogoQuebraCabeca';
 import JogoConexao from './JogoConexao';
+import Jogo1 from './Jogo1';
+import Jogo2 from './Jogo2';
+import Jogo4 from './Jogo4';
+
+const SOM_DE_FUNDO = '/assets/fundo.mp3';
 
 const vozesMasculinas = ["masculina", "carlos", "daniel", "paulo"];
 const vozesFemininas = ["feminina", "luciana", "maria", "helena"];
@@ -27,6 +32,20 @@ function App() {
   const [vozSelecionada, setVozSelecionada] = useState(null);
   const [narradoInicio, setNarradoInicio] = useState(false);
   const [narradoFim, setNarradoFim] = useState(false);
+
+  useEffect(() => {
+  if (comecou) {
+    const audio = new Audio(SOM_DE_FUNDO);
+    audio.loop = true;
+    audio.volume = 0.01;
+    audio.play();
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }
+}, [comecou]);
 
   useEffect(() => {
     const carregarVozes = () => {
@@ -121,50 +140,28 @@ function App() {
     };
 
     switch (fase) {
-      case 0:
-        return (
-          <>
-            <h3>Qual dessas imagens mostra alguém feliz?</h3>
-            <div className="card-container">
-              <img src="/assets/happy.png" alt="Feliz" className={`card-img ${imagemSelecionada === 'feliz' ? 'selecionada' : ''}`} onClick={() => clique(true, 'feliz')} />
-              <img src="/assets/sad.png" alt="Triste" className={`card-img ${imagemSelecionada === 'triste' ? 'selecionada' : ''}`} onClick={() => clique(false, 'triste')} />
-              <img src="/assets/angry.png" alt="Bravo" className={`card-img ${imagemSelecionada === 'bravo' ? 'selecionada' : ''}`} onClick={() => clique(false, 'bravo')} />
-            </div>
-          </>
-        );
-      case 1:
-        return (
-          <>
-            <h3>Ouça o som e clique na emoção certa</h3>
-            <audio src="/assets/laugh.mp3" controls autoPlay />
-            <div className="card-container">
-              <img src="/assets/laugh.png" alt="Risada" className={`card-img ${imagemSelecionada === 'risada' ? 'selecionada' : ''}`} onClick={() => clique(true, 'risada')} />
-              <img src="/assets/cry.png" alt="Choro" className={`card-img ${imagemSelecionada === 'choro' ? 'selecionada' : ''}`} onClick={() => clique(false, 'choro')} />
-              <img src="/assets/anger.png" alt="Raiva" className={`card-img ${imagemSelecionada === 'raiva' ? 'selecionada' : ''}`} onClick={() => clique(false, 'raiva')} />
-            </div>
-          </>
-        );
-      case 2:
-        return <JogoQuebraCabeca onCompleto={() => {
-          setAcertou(true);
-          narrar('Muito bem! Você montou a emoção feliz!');
-        }} />;
-      case 3:
-        return (
-          <>
-            <h3>Qual é a emoção desta situação?</h3>
-            <p>“A criança caiu e perdeu o sorvete.”</p>
-            <div className="card-container">
-              <img src="/assets/sad.png" alt="Triste" className={`card-img ${imagemSelecionada === 'triste' ? 'selecionada' : ''}`} onClick={() => clique(true, 'triste')} />
-              <img src="/assets/happy.png" alt="Feliz" className={`card-img ${imagemSelecionada === 'feliz' ? 'selecionada' : ''}`} onClick={() => clique(false, 'feliz')} />
-              <img src="/assets/angry.png" alt="Bravo" className={`card-img ${imagemSelecionada === 'bravo' ? 'selecionada' : ''}`} onClick={() => clique(false, 'bravo')} />
-            </div>
-          </>
-        );
-      case 4:
-        return <JogoConexao avatar={avatar} onAcertouTudo={() => setAcertou(true)} narrar={narrar} />;
-      case 5:
-        return <JogoMemoria onAcertoFinal={() => setAcertou(true)} />;
+  case 0:
+  return (
+    <Jogo1
+      onCompleto={() => setAcertou(true)}
+      narrar={narrar}
+    />
+  );
+      
+  case 1:
+    return <Jogo2 onCompleto={() => setAcertou(true)} narrar={narrar} />;
+  
+  case 2:
+  return <JogoQuebraCabeca onCompleto={() => setAcertou(true)} narrar={narrar} />;
+  
+  case 3:
+  return <Jogo4 onCompleto={() => setAcertou(true)} narrar={narrar} />;
+      
+  case 4:
+  return <JogoConexao avatar={avatar} onAcertouTudo={() => setAcertou(true)} narrar={narrar} />;
+      
+  case 5:
+  return <JogoMemoria onAcertoFinal={() => setAcertou(true)} />;
       default:
         return null;
     }
@@ -176,13 +173,14 @@ function App() {
         <h1>🎉 Parabéns, {nome}! 🎉</h1>
         <p>Você completou todos os jogos!</p>
         <img src="/assets/happy.png" alt="Feliz" className="avatar-final" />
-        <button onClick={resetar}>Reiniciar Jogo</button>
+        <button onClick={resetar}>Reiniciar Jogo ​🔄​</button>
         <div className="confete"></div>
       </div>
     );
   }
 
   return (
+    
     <div className="app">
       {!comecou ? (
         <div className="menu">
@@ -210,9 +208,21 @@ function App() {
           <h2>{jogos[fase]}</h2>
           <div className="avatar-nome-display"></div>
           {renderizarJogo()}
-          <button onClick={proximoJogo} disabled={!acertou} className="botao-proximo">Próximo</button>
+          <button onClick={proximoJogo} disabled={!acertou} className="botao-proximo">
+  {fase < jogos.length - 1 ? 'Próximo Jogo ​👏​​' : 'Terminar Jogos ​🥳​'}
+</button>
         </div>
       )}
+      <div className="copyright">
+  <img src="/assets/icon.png" alt="Logo" className="copyright-icon" />
+  <span className="copyright-text">
+    © {new Date().getFullYear()} Esc. Joana Honório — Dev.{' '}
+    <a href="https://www.instagram.com/joatan_henrique/" target="_blank" rel="noopener noreferrer">
+      Joatan Henrique
+    </a>
+  </span>
+</div>
+
     </div>
   );
 }
